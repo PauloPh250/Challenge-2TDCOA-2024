@@ -1,0 +1,40 @@
+from flask import Flask, request, jsonify
+
+app = Flask(name)
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    data = request.json
+    # Processar a mensagem recebida
+    mensagem = data['messages'][0]['text']['body']
+    analise = analisarmensagem(mensagem)
+    return jsonify(analise)
+
+if name == '_main':
+    app.run(port=5000)
+
+#Análise de Mensagens
+from urllib.parse import urlparse
+
+def analisar_mensagem(mensagem):
+    links = re.findall(r'(https?://\S+)', mensagem)
+    suspeita = verificar_links(links)
+    if suspeita:
+        return {'status': 'suspeito', 'mensagem': 'Esta mensagem pode ser phishing.'}
+    else:
+        return {'status': 'seguro', 'mensagem': 'Esta mensagem parece segura.'}
+
+#Verificação de Links
+import requests
+
+def verificar_links(links):
+    api_key = 'SUA_API_KEY_VIRUSTOTAL'
+    for link in links:
+        response = requests.get(f'https://www.virustotal.com/vtapi/v2/url/report',
+                                params={'apikey': api_key, 'resource': link})
+        result = response.json()
+        if result['positives'] > 0:
+            return True
+    return False
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
